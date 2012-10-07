@@ -88,7 +88,7 @@ responses. The basic structure of an Ext Direct is request is shown
 below. Some of these parameters are required, while some are not. The
 parameters action and method are required and define which action is
 executed on the server. A transaction ID must be passed through the
-parameter tid. Notable is also the parameter \_\_\_\_bcid\_\_ which is
+parameter tid. Notable is also the parameter *_UID* which is
 optional and can hold the client ID. If this parameter is given Bancha
 ensures consistency for this model.
 
@@ -362,8 +362,8 @@ an in-depth description of request handling in CakePHP.
 
 CakePHP uses *CakeRequest* to handle and represent all kinds of HTTP
 requests inside the framework. Therefore this class reads the values of
-*:math:`_GET*, *`\ *POST\*, \*:math:`_COOKIE*, *`\ *SESSION* and
-\*:math:`_SERVER*, which are automatically setted by PHP. Cake calls GET parameters params and POST parameters data and stores them in two different arrays _`\ params\_
+*$_GET*, *$_POST*, *$_COOKIE*, *$_SESSION* and
+*$_SERVER*, which are automatically setted by PHP. Cake calls GET parameters params and POST parameters data and stores them in two different arrays _`\ params\_
 and *$data*. Params can be accessed using the magic array methods (see
 below), while data values can be accessed using the *data()* method of
 *CakeRequest*.
@@ -519,8 +519,8 @@ the paging parameters:
    (asc or desc).
 -  *conditions*: Conditions that a row must fulfill in order to be
    included in the result set. See
-   http://book.cakephp.org/view/1030/Complex-Find-Conditions for more
-   information on find conditions in CakePHP.
+   the `CakePHP documentation <http://book.cakephp.org/2.0/en/models/retrieving-your-data.html#complex-find-conditions>`_
+   for more information on find conditions in CakePHP.
 
 16. *fields*: Array with column names (including the model name) that
     should be included in the result set.

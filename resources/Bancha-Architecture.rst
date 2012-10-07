@@ -56,11 +56,13 @@ How to use it
 ~~~~~~~~~~~~~
 
 There are 3 ways to use this controller. Just accessing the Controller
-with a URL like http://localhost/Bancha.js returns the Bancha API
+with the URL *http://localhost/bancha-api.js* returns the Bancha API
 including controller actions but no ModelMetaData. You can also pass
 models as parameters to the index method like this
-http://localhost/Bancha.js?models=[Article,User] , this will give us the
-meta data for User and the Tag model.
+*http://localhost/bancha-api.js?models/[Article,User].js* , this will 
+give us the meta data for the Article and User Tag model. With 
+*http://localhost/bancha-api.js?models/all.js*  we can load all models 
+and all meta data.
 
 Bancha internally uses this mechanism, so you will normally NOT have to
 use any BanchaController methods.

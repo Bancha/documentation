@@ -25,13 +25,12 @@ can be accessed like
 For more see `How to Expose Controller
 Methods <./How-to-Expose-Controller-Methods.html>`_.
 
-See also:
----------
+See also
+--------
 
 -  `Bancha with Sencha Touch
    Screencast <http://vimeo.com/bancha/bancha-for-sencha-touch-2>`_
 -  `Bancha JS API
-   Documentation <http://docs.banchaproject.org/js/index.html#/api/Bancha>`_
-   (especially for all scaffolding options)
+   Documentation <http://api.banchaproject.org/js/index.html#/api/Bancha>`_
 -  `Bancha Samples <http://samples.banchaproject.org/>`_
 

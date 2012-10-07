@@ -9,9 +9,9 @@ With Bancha you have two different ways of using it:
 **New developers should start by exposing models, since that's where Bancha does a lot of work for you!**
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 4
 
-   How-to-Expose-Models 
+   How-to-Expose-Models
    Supported-Validation-Rules
    Saving-records
 

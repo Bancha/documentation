@@ -23,7 +23,7 @@ console with Banchas controller template:
    How to bake a controller
 
 For more details see the
-`http://book.cakephp.org/2.0/en/console-and-shells/code-generation-with-bake.html <CakePHP%20documentation>`_.
+`CakePHP documentation <http://book.cakephp.org/2.0/en/console-and-shells/code-generation-with-bake.html>`_.
 
 For already existing controllers
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -45,12 +45,9 @@ What's next
 
 That's it, now you can write normal ExtJS code using
 Bancha.onModelReady(modelName,fn) and Bancha.getModel(modelName) or you
-take a look at our powerfull scaffolding classes which are using all the
-served meta data from cake to have create e.g. grids liks this:
-Ext.create("Ext.grid.Panel",{scaffold:'User'}); ### Tip: In development
-use an `error-handler like
-this <https://github.com/Bancha/BanchaTestProject/blob/master/webroot/js/error-handling.js>`_
-to more easily see server-side errors in extjs.
+take a look at our powerfull `Scaffolding library <http://scaffold.banchaproject.org>`_, 
+which uses all the Bancha meta data to create grids grids and forms with an minimal markup.
+For example: *Ext.create("Ext.grid.Panel",{scaffold:'User'});*
 
 Fine tuning
 -----------
@@ -61,7 +58,7 @@ cakephp site.
 
 Bancha will automatically recognize model validation rules, and provide
 them as well on the client side in ExtJS. See `Supported Validation
-Rules <https://github.com/Bancha/Bancha/wiki/Supported-Validation-Rules>`_
+Rules <http://docs.banchaproject.org/resources/Supported-Validation-Rules.html>`_
 
 ::
 
@@ -71,9 +68,9 @@ Side note: Bancha augments the models a bit, validations and save
 operations are only are executed on defined fields, validation will not
 fail if a field is missing - this is because ExtJS only send the changed
 fields in an edit request. If you don't like this set the BanchaBehavior
-setup config to array('useOnlyDefinedFields'=>false). Keep in mind to
-then use :math:`model->saveFields(`\ data,$options) instead of
-$model->save().
+setup config to *array('useOnlyDefinedFields'=>false)*. Keep in mind to
+then use *$model->saveFields($data, $options)* for Bancha requests instead 
+of *$model->save()*.
 
 Trouble Shooting
 ----------------

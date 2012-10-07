@@ -58,6 +58,6 @@ Options:
    save changed fields. Note that this is forced even for "normal" cake
    requests. If true the model also saves and validates records with
    missing fields. If you set this to false please use
-   *:math:`model->saveFields(`\ data,$options)* for saving ExtJS data
+   *model->saveFields($data, $options)* for saving ExtJS data
    with partial model fields.
 

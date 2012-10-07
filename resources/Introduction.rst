@@ -14,8 +14,8 @@ The last chapter explains the Frontend Architecture of Bancha.
 Additional documentation can be found in the source code or at the
 following resources:
 
--  `PHP API Reference <http://docs.banchaproject.org/php>`_
--  `JavaScript API Reference <http://docs.banchaproject.org/js/>`_
+-  `PHP API Reference <http://api.banchaproject.org/php>`_
+-  `JavaScript API Reference <http://api.banchaproject.org/js/index.html#/api/Bancha>`_
 
 Definition of Technologies
 --------------------------
@@ -36,12 +36,20 @@ Principles of the Bancha Architecture
 
 This chapter highlights some of the main principles of the Bancha
 architecture, which have effects on how the Bancha code is implemented.
-### Do not overwrite CakePHP The source code of CakePHP should not be
+
+Do not overwrite CakePHP
+++++++++++++++++++++++++
+
+The source code of CakePHP should not be
 overwritten. This is important, because it makes updating the CakePHP
 code much easier. Also, if Bancha does not overwrite CakePHP every
 CakePHP user can easily install Bancha, even for existing installations.
 Therefore Bancha is designed as a CakePHP plug-in.
-### Do not overwrite ExtJS The source code of ExtJS should not be
+
+Do not overwrite ExtJS
+++++++++++++++++++++++
+
+The source code of ExtJS should not be
 overwritten either. On the ExtJS part this is easier. We just create a
 Bancha Singleton which then uses the existing classes and in some parts
 extend them.

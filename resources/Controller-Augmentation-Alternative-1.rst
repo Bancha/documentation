@@ -88,5 +88,5 @@ You can see the changes are relatively small and have two aims:
 -  always return a result value
 -  don't execute $this->setFlash() and $this->redirect(), since they are
    currently causing problems, also see `How to Expose
-   Models <https://github.com/Bancha/Bancha/wiki/How-to-Expose-Models>`_
+   Models <How-to-Expose-Models.html>`_
 

@@ -78,7 +78,7 @@ configurations for fields and columns and interceptor functions to
 change the default behavior.
 
 For more details see our extensive `JavaScript API
-documentation <http://docs.banchaproject.org/js/#/api/Bancha>`_
+documentation <http://api.banchaproject.org/js/#/api/Bancha>`_
 
 Input Validation
 ----------------
@@ -105,7 +105,7 @@ Bancha will transform CakePHP model validation rules in ExtJSs
 *Ext.data.validation* format. To not loose information here we extended
 the singleton by adding two new types: *numberformat* and *file* (see
 `API
-Docs <http://docs.banchaproject.org/js/#/api/Ext.data.validations>`_).
+Docs <http://api.banchaproject.org/js/#/api/Ext.data.validations>`_).
 
 When scaffolding a form we transform the model validation rules into
 either a form field or a *vtype* validation rules. For this reason we
