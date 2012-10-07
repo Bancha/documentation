@@ -1,8 +1,6 @@
 Installation
 ============
 
-`|Bancha Project| <http://banchaproject.com>`_
-
 Prerequisites
 -------------
 
@@ -118,7 +116,4 @@ After you have successfully finished installation you can open the page
 **/Bancha/setup-check.html** to find any installation problem.
 
 For questions write us a mail: support@banchaproject.org
-
-.. |Bancha Project| image:: images/github-logo.png
-
 

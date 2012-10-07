@@ -16,7 +16,7 @@ The easy way: Baking your controller
 The easiest way is to just bake a controller using the CakePHP bake
 console with Banchas controller template:
 
-.. figure:: http://docs.banchaproject.org/wiki/images/bake-a-bancha-controller.png
+.. figure:: images/bake-a-bancha-controller.png
    :align: center
    :alt: How to bake a controller
 

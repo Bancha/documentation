@@ -101,9 +101,8 @@ div.sphinxsidebarwrapper{
 }
 
 div.sphinxsidebarwrapper .logo {
-    margin: auto;
-    padding-left: 10px;
-    padding-bottom: 10px;
+    margin: 0;
+    padding: 10px;
 }
 
 div.sphinxsidebar h3,

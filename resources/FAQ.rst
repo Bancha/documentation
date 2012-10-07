@@ -77,5 +77,5 @@ More?
 **If you have any questions or tips what we should explain better in the
 documentation, just write us: mail@rolandschuetz.at**
 
-**Please report bugs to `github
-issues <https://github.com/Bancha/Bancha/issues>`_**
+**Please report bugs to the** `Github Issues 
+<https://github.com/Bancha/Bancha/issues>`_
