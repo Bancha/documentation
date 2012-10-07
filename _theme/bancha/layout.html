@@ -69,9 +69,6 @@
             {%- block sidebarrel %}
             {%- include "relations.html" %}
             {%- endblock %}
-            {%- block sidebarsourcelink %}
-            {%- include "sourcelink.html" %}
-            {%- endblock %}
             {%- if customsidebar %}
             {%- include customsidebar %}
             {%- endif %}
@@ -156,12 +153,13 @@
   <body>
 {%- block header %}{% endblock %}
 
-{%- block relbar1 %}{{ relbar() }}{% endblock %}
+
 
 {%- block content %}
   {%- block sidebar1 %} {# possible location for sidebar #} {% endblock %}
 
     <div class="document">
+  {%- block relbar1 %}{{ relbar() }}{% endblock %}
   {%- block document %}
       <div class="documentwrapper">
       {%- if render_sidebar %}
@@ -178,10 +176,11 @@
 
   {%- block sidebar2 %}{{ sidebar() }}{% endblock %}
       <div class="clearer"></div>
+    {%- block relbar2 %}{{ relbar() }}{% endblock %}
     </div>
 {%- endblock %}
 
-{%- block relbar2 %}{{ relbar() }}{% endblock %}
+
 
 {%- block footer %}
     <div class="footer">
