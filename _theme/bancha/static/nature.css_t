@@ -16,7 +16,7 @@
 body {
     font-family: 'Droid Sans', Arial, sans-serif;
     font-size: 100%;
-    background-color: #111;
+    background-color: #f8f8f8;
     color: #555;
     margin: 0;
     padding: 0;
@@ -36,7 +36,15 @@ hr {
 }
  
 div.document {
-    background-color: #eee;
+    /* rounded border */
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    -webkit-box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
+    -moz-box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
+
+    background-color: #f8f8f8;
     width: 1000px;
     margin: auto;
 }
@@ -47,6 +55,14 @@ div.body {
     color: #3E4349;
     padding: 0 30px 30px 30px;
     /*font-size: 0.9em; */
+
+    /* rounded border */
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    -webkit-box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
+    -moz-box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
 }
  
 div.footer {
@@ -81,9 +97,15 @@ div.sphinxsidebar {
 }
 
 div.sphinxsidebarwrapper{
-    padding: 20px 0;
+    padding: 0 0 20px 0;
 }
- 
+
+div.sphinxsidebarwrapper .logo {
+    margin: auto;
+    padding-left: 10px;
+    padding-bottom: 10px;
+}
+
 div.sphinxsidebar h3,
 div.sphinxsidebar h4 {
     font-family: 'Droid Sans', Arial, sans-serif;
@@ -144,6 +166,7 @@ a:hover {
     text-decoration: underline;
 }
  
+/*
 div.body h1,
 div.body h2,
 div.body h3,
@@ -164,7 +187,8 @@ div.body h3 { font-size: 120%; background-color: #D8DEE3; }
 div.body h4 { font-size: 110%; background-color: #D8DEE3; }
 div.body h5 { font-size: 100%; background-color: #D8DEE3; }
 div.body h6 { font-size: 100%; background-color: #D8DEE3; }
- 
+ */
+
 a.headerlink {
     color: #c60f0f;
     font-size: 0.8em;
@@ -246,103 +270,74 @@ div.viewcode-block:target {
     border-bottom: 1px solid #ac9;
 }
 body {
-	background: url(/tl_files/Bancha/images/bg.png);
-	color: #555;
-	font: 15px 'Droid Sans', Georgia, 'Times New Roman', Times, serif;
+    background: url(http://banchaproject.org/tl_files/Bancha/images/bg.png);
+    color: #555;
+    font: 15px 'Droid Sans', Georgia, 'Times New Roman', Times, serif;
 }
 
 h1 {
-	padding: 40px 0;
-	text-align: center;
+    margin: 0;
+    padding: 45px 0 5px 0;
+    font-size: 30px;
+    font-weight: normal;
+    color: #733;
+    text-align: left;
 }
 
 h2 {
-	margin: 20px 0;
-	color: #663333;
-	font-weight: normal;
-	font-size: 22px;
+    margin: 0;
+    padding: 20px 0 5px 0;
+    color: #A22;
+    font-weight: normal;
+    font-size: 22px;
 }
 
 h3 {
-	margin: 20px 0 10px;
-	color: #663333;
-	font-weight: normal;
-	font-size: 18px;
+    margin: 20px 0 10px;
+    color: #663333;
+    font-weight: normal;
+    font-size: 18px;
 }
 
 h4 {
-	margin: 15px 0 5px;
-	color: #663333;
-	font-weight: normal;
-	font-size: 16px;
+    margin: 15px 0 5px;
+    color: #663333;
+    font-weight: normal;
+    font-size: 16px;
 }
 
 p {
-	margin: 10px 0;
-	line-height: 150%;
+    margin: 10px 0;
+    line-height: 150%;
 }
 
 a:link,
 a:active,
 a:visited {
-	color: #345673;
+    color: #345673;
 }
 
 a:hover {
-	color: #663333;
-	text-decoration: none;
+    color: #663333;
+    text-decoration: none;
 }
 
 code {
-	display: block;
-	margin: 5px 0;
-	padding: 5px;
-	-webkit-box-shadow: 0 0 5px #fff;
-	background: #555;
-	color: #fff;
-	font: 14px Inconsolata, 'Courier New', monospace;
-}
-
-.extjs-logo,
-.cakephp-logo {
-	padding: 40px 0;
-}
-
-.extjs-logo {
-	text-align: right;
+    display: block;
+    margin: 5px 0;
+    padding: 5px;
+    -webkit-box-shadow: 0 0 5px #fff;
+    -moz-box-shadow: 0 0 5px #fff;
+    box-shadow: 0 0 5px #fff;
+    background: #555;
+    color: #fff;
+    font: 14px Inconsolata, 'Courier New', monospace;
 }
 
 .listing-caption {
-	font: 12px 'Droid Sans', Arial, sans-serif;
+    font: 12px 'Droid Sans', Arial, sans-serif;
 }
 
 .listing-caption strong {
-	margin-right: 5px;
-}
-
-#info {
-	margin: 40px 0;
-	font-size: 13px;
-}
-
-#footer {
-	margin: 20px 0;
-}
-
-.sidebar {
-	font: 12px 'Droid Sans', Arial, sans-serif;
-}
-
-.sidebar h2 {
-	font-size: 18px;
-}
-
-.sidebar ol {
-	margin-left: 20px;
-	line-height: 150%;
-}
-
-.content ul {
-	margin: 10px 0 10px 30px;
-	line-height: 150%;
+    margin-right: 5px;
 }
