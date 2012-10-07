@@ -1,0 +1,184 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+<link href='http://fonts.googleapis.com/css?family=Droid+Serif:regular,bold' rel='stylesheet' type='text/css' /> 
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>FAQ &mdash; Bancha 1.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Bancha 1.1.0 documentation" href="../index.html" />
+    <link rel="prev" title="Bancha Frontend" href="Bancha-Frontend.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="Bancha-Frontend.html" title="Bancha Frontend"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Bancha 1.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="faq">
+<h1>FAQ<a class="headerlink" href="#faq" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="i-have-an-existing-cakephp-application-can-i-use-bancha-here">
+<h2>I have an existing CakePHP application, can I use Bancha here?<a class="headerlink" href="#i-have-an-existing-cakephp-application-can-i-use-bancha-here" title="Permalink to this headline">¶</a></h2>
+<p>Yes. Bancha will perfectly integrate into your existing project, install
+the Bancha Cake-Plugin an get started working on your new ExtJS- or
+Sencha Touch Application.</p>
+<p>All your original CakePHP pages will work like the are used to.</p>
+</div>
+<div class="section" id="how-can-i-use-associated-data">
+<h2>How can I use associated data?<a class="headerlink" href="#how-can-i-use-associated-data" title="Permalink to this headline">¶</a></h2>
+<p>We are currently supporting associated data in the model (see
+<a class="reference external" href="http://www.sencha.com/blog/ext-js-4-anatomy-of-a-model">Associations in
+ExtJS</a>), so
+all in Cake defined associations are mapped to ExtJS model.</p>
+<p>We are not yet supporting associated data in our scaffolding (this seems
+to be quite tricky, since ExtJs doesn&#8217;t provide a elegant solution for
+this). You can manually load the store and overwrite the column config
+with a custom renderer, like:</p>
+<div class="highlight-python"><pre>// create &amp; load the store (article belongsTo author)
+var authorStore = config.store.author();
+authorStore.load({
+    callback: function() {
+        // store is laoded, so now build the grid using Bancha scaffolding
+        Ext.create('Ext.grid.Panel' {
+            ...
+            scaffold: {
+                ...
+                afterBuild: function(config) {
+                    // overwrite id column type for the name
+                    config.columns[1].xtype = 'gridcolumn';
+
+                    // add a renderer
+                    config.columns[1].renderer = function(a,b,c) {
+                        return store.getAt(store.findExact('id',c.data.author_id)).data.name;
+                    };
+                } //eo afterBuild
+            } /eo scaffold
+        }; //eo panel
+}}); //eo load</pre>
+</div>
+</div>
+<div class="section" id="why-do-you-have-your-own-dispatcher">
+<h2>Why do you have your own dispatcher?<a class="headerlink" href="#why-do-you-have-your-own-dispatcher" title="Permalink to this headline">¶</a></h2>
+<p>The decision for a separate dispatcher wasn&#8217;t an easy one, but it was
+the only way we could support the full Ext.Direct spec. Ext.Direct
+allows us to pack multiple requests into one http request, like
+[request1, request3, ..]. Cakes dispatcher is a single dispatcher and
+can&#8217;t handle multiple requests since the design expects HTML outputs. So
+to accomplish our goal of minimizing network latency we had to wrap
+cakes single dispatcher with an Bancha dispatcher which handles multiple
+requests and current routing between ExtJS naming and Cakes naming.</p>
+<p>A simple example: A app shows a user login, as soon as the user is
+logged in 9 different stores/individual records get loaded. Using the
+standard cakephp dispatcher the first 4 requests would be send by the
+browser (browsers don&#8217;t support sending of unlimited requests at the
+same time), handled and after those the next 4.. everyone with his own
+latency, etc… With Banchas Multi-Dispatcher this stays one http request
+serving the data in a wrapped way.</p>
+<p>The icing on the cake is here that we can keep both worlds separate and
+naming always stays by convention. Also some other features, like remote
+sorting elegantly integrates into Cake.</p>
+</div>
+<div class="section" id="more">
+<h2>More?<a class="headerlink" href="#more" title="Permalink to this headline">¶</a></h2>
+<p><strong>If you have any questions or tips what we should explain better in the
+documentation, just write us: mail&#64;rolandschuetz.at</strong></p>
+<p><strong>Please report bugs to `github
+issues &lt;https://github.com/Bancha/Bancha/issues&gt;`_</strong></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/bancha-logo.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">FAQ</a><ul>
+<li><a class="reference internal" href="#i-have-an-existing-cakephp-application-can-i-use-bancha-here">I have an existing CakePHP application, can I use Bancha here?</a></li>
+<li><a class="reference internal" href="#how-can-i-use-associated-data">How can I use associated data?</a></li>
+<li><a class="reference internal" href="#why-do-you-have-your-own-dispatcher">Why do you have your own dispatcher?</a></li>
+<li><a class="reference internal" href="#more">More?</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Bancha-Frontend.html"
+                        title="previous chapter">Bancha Frontend</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/resources/FAQ.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="Bancha-Frontend.html" title="Bancha Frontend"
+             >previous</a> |</li>
+        <li><a href="../index.html">Bancha 1.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, StudioQ OG. All rights reserved.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

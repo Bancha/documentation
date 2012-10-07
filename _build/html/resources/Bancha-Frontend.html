@@ -1,0 +1,219 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+<link href='http://fonts.googleapis.com/css?family=Droid+Serif:regular,bold' rel='stylesheet' type='text/css' /> 
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Bancha Frontend &mdash; Bancha 1.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Bancha 1.1.0 documentation" href="../index.html" />
+    <link rel="up" title="Technical Documentation" href="Technical-Documentation.html" />
+    <link rel="next" title="FAQ" href="FAQ.html" />
+    <link rel="prev" title="Consistent Model (Not yet implemented!)" href="Consistent-Model.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="FAQ.html" title="FAQ"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Consistent-Model.html" title="Consistent Model (Not yet implemented!)"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Bancha 1.1.0 documentation</a> &raquo;</li>
+          <li><a href="Technical-Documentation.html" accesskey="U">Technical Documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="bancha-frontend">
+<h1>Bancha Frontend<a class="headerlink" href="#bancha-frontend" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="bancha-frontend-workspace">
+<h2>Bancha Frontend Workspace<a class="headerlink" href="#bancha-frontend-workspace" title="Permalink to this headline">¶</a></h2>
+<p>In the frontend ExtJS provides us with an class system, as well as a
+very powerful model class. This class also provides connectors for
+proxies and stores. Stores in ExtJS are a wrapper over a set of model
+entries (like a table in databases).</p>
+<p>As you can see in the diagram, a model definition has multiple fields,
+associations and validation rules. Bancha provides on the backend a
+method for loading these configurations from the CakePHP model
+configuration. On the client-side we use this schema and validation
+rules (metadata) to provide remotable models to the user. This is done
+via <em>BanchaController</em>.</p>
+<div class="figure align-center">
+<img alt="Figure 1" src="../_images/image04.png" />
+<p class="caption">Figure 1</p>
+</div>
+<p>The ExtJS 4 Data Package structure.</p>
+</div>
+<div class="section" id="bancha-frontend-architecture">
+<h2>Bancha Frontend Architecture<a class="headerlink" href="#bancha-frontend-architecture" title="Permalink to this headline">¶</a></h2>
+<p>Bancha provides on the client-side methods for loading metadata and
+retrieving models. In the background it uses some server-side Bancha
+functions and the RPC architecture. We have one singleton Bancha which
+is done as a facade pattern. It hides the logic of lazy loading
+metadata, interpreting it, handling consistency and using Ext Direct.</p>
+<p>The developer mainly will use one of two functions to get models:</p>
+<ul class="simple">
+<li><em>Bancha.onModelReady(modelNames, callback, scope)</em> executes the
+callback as soon as the metadata is loaded</li>
+<li><em>Bancha.getModel(modelName)</em> (after <em>Bancha.init()</em>, returns the
+model (on first request it also creates it, singleton pattern)</li>
+</ul>
+<p>It also supplies some advanced functions:</p>
+<ul class="simple">
+<li><em>Bancha.preloadModelMetaData(modelNames,callback,scope)</em> for
+performance boosts</li>
+<li><em>Bancha.createModel(modelName, modelConfig)</em> if you want to add
+additional configurations to the model</li>
+</ul>
+<div class="figure align-center">
+<img alt="Figure 2" src="../_images/image03.png" />
+<p class="caption">Figure 2</p>
+</div>
+<p>Figure 2: Overview of the Bancha frontend architecture.</p>
+</div>
+<div class="section" id="scaffolding">
+<h2>Scaffolding<a class="headerlink" href="#scaffolding" title="Permalink to this headline">¶</a></h2>
+<p>Additionally Banchas JavaScript provides extensive scaffolding
+functionality for forms and grids. The challenge here was how to expose
+enough, but not too much configurations. If everything is totally
+configurable the scaffolding gets more complex then actually writing
+standard code and therefore brings no additional value. On the other
+side if too less can be configured it is not helpful either.</p>
+<p>Our solution was to expose all styling and event handling (button
+pressing, etc.), but keep schema transformations, validation rules and
+internal logic hidden. We provide good defaults for all configurations
+and two ways to change them. All properties are changeable on a static
+singleton which effects the scaffolding globally. Alternatively to the
+global config the user can override properties for a single scaffold
+action by passing a configuration object.</p>
+<p>The configuration consist of configurations for the whole panel,
+configurations for fields and columns and interceptor functions to
+change the default behavior.</p>
+<p>For more details see our extensive <a class="reference external" href="http://docs.banchaproject.org/js/#/api/Bancha">JavaScript API
+documentation</a></p>
+</div>
+<div class="section" id="input-validation">
+<h2>Input Validation<a class="headerlink" href="#input-validation" title="Permalink to this headline">¶</a></h2>
+<p>One of your goals was to make scaffolding with CakePHP and ExtJS easy.
+In CakePHP all validation rules are configured in one format, but in
+ExtJS we have many different formats.</p>
+<div class="figure align-center">
+<img alt="Figure 3" src="../_images/image06.png" />
+<p class="caption">Figure 3</p>
+</div>
+<p>Figure 3: Part of the ExtJS 4 form panel structure to highlight the
+different validation classes.</p>
+<p>The model class provides some very basic validation functions using the
+<em>Ext.data.validations</em> singleton. Form fields use some easy
+configurations directly on the field, as well as advanced rules from the
+<strong>Ext.form.field.VTypes</strong> singleton.</p>
+<p>Bancha will transform CakePHP model validation rules in ExtJSs
+<em>Ext.data.validation</em> format. To not loose information here we extended
+the singleton by adding two new types: <em>numberformat</em> and <em>file</em> (see
+<a class="reference external" href="http://docs.banchaproject.org/js/#/api/Ext.data.validations">API
+Docs</a>).</p>
+<p>When scaffolding a form we transform the model validation rules into
+either a form field or a <em>vtype</em> validation rules. For this reason we
+also added the <em>VType</em> method <em>fileExtension</em>.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/bancha-logo.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Bancha Frontend</a><ul>
+<li><a class="reference internal" href="#bancha-frontend-workspace">Bancha Frontend Workspace</a></li>
+<li><a class="reference internal" href="#bancha-frontend-architecture">Bancha Frontend Architecture</a></li>
+<li><a class="reference internal" href="#scaffolding">Scaffolding</a></li>
+<li><a class="reference internal" href="#input-validation">Input Validation</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Consistent-Model.html"
+                        title="previous chapter">Consistent Model (Not yet implemented!)</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="FAQ.html"
+                        title="next chapter">FAQ</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/resources/Bancha-Frontend.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="FAQ.html" title="FAQ"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Consistent-Model.html" title="Consistent Model (Not yet implemented!)"
+             >previous</a> |</li>
+        <li><a href="../index.html">Bancha 1.1.0 documentation</a> &raquo;</li>
+          <li><a href="Technical-Documentation.html" >Technical Documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, StudioQ OG. All rights reserved.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

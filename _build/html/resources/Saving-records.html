@@ -1,0 +1,156 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+<link href='http://fonts.googleapis.com/css?family=Droid+Serif:regular,bold' rel='stylesheet' type='text/css' /> 
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Saving Records &mdash; Bancha 1.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Bancha 1.1.0 documentation" href="../index.html" />
+    <link rel="up" title="Usage in CakePHP" href="Usage-in-CakePHP.html" />
+    <link rel="next" title="How to Expose Controller Methods" href="How-to-Expose-Controller-Methods.html" />
+    <link rel="prev" title="Supported Validation Rules" href="Supported-Validation-Rules.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="How-to-Expose-Controller-Methods.html" title="How to Expose Controller Methods"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Supported-Validation-Rules.html" title="Supported Validation Rules"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Bancha 1.1.0 documentation</a> &raquo;</li>
+          <li><a href="Usage-in-CakePHP.html" accesskey="U">Usage in CakePHP</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="saving-records">
+<h1>Saving Records<a class="headerlink" href="#saving-records" title="Permalink to this headline">¶</a></h1>
+<p>CakePHP&#8217;s model save record expects all fields to be defined. But to
+save bandwidth and make the usage more flexible (you don&#8217;t have to share
+all data with the frontend) Bancha uses Sencha Touch/ExtJS&#8217;s partial
+saving (<a class="reference external" href="http://docs.sencha.com/ext-js/4-0/#!/api/Ext.data.writer.Writer-cfg-writeAllFields">Writer
+writeAllFields:false</a>).</p>
+<p>CakePHP would now go ahead and set all missing fields to null. That&#8217;s
+why the BanchaBehavior adds new methods to every model:</p>
+<div class="section" id="savefields">
+<h2>saveFields<a class="headerlink" href="#savefields" title="Permalink to this headline">¶</a></h2>
+<p>Use this method instead of Model::save, it creates a new record if no id
+is provided and updates if an id is provided. This internally sets cakes
+model whitelist property to only save the provided fields before before
+saving. You can also use this methods for normal CakePHP requests and it
+will behave like a normal save operation.</p>
+</div>
+<div class="section" id="getlastsaveresult">
+<h2>getLastSaveResult<a class="headerlink" href="#getlastsaveresult" title="Permalink to this headline">¶</a></h2>
+<p>This will return the result of the last model save in the correct Bancha
+result format. So a common last line in your controller method could be
+<em>return $this-&gt;User-&gt;getLastSaveResult();</em></p>
+</div>
+<div class="section" id="savefieldsandreturn">
+<h2>saveFieldsAndReturn<a class="headerlink" href="#savefieldsandreturn" title="Permalink to this headline">¶</a></h2>
+<p>This is a convenience method, combining the above two. Bancha expects
+every controller method to return a result. So if you last actions is to
+save a record and then return the result (like in a typical create or
+update request) you can use this method.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/bancha-logo.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Saving Records</a><ul>
+<li><a class="reference internal" href="#savefields">saveFields</a></li>
+<li><a class="reference internal" href="#getlastsaveresult">getLastSaveResult</a></li>
+<li><a class="reference internal" href="#savefieldsandreturn">saveFieldsAndReturn</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Supported-Validation-Rules.html"
+                        title="previous chapter">Supported Validation Rules</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="How-to-Expose-Controller-Methods.html"
+                        title="next chapter">How to Expose Controller Methods</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/resources/Saving-records.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="How-to-Expose-Controller-Methods.html" title="How to Expose Controller Methods"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Supported-Validation-Rules.html" title="Supported Validation Rules"
+             >previous</a> |</li>
+        <li><a href="../index.html">Bancha 1.1.0 documentation</a> &raquo;</li>
+          <li><a href="Usage-in-CakePHP.html" >Usage in CakePHP</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, StudioQ OG. All rights reserved.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

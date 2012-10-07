@@ -1,0 +1,203 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+<link href='http://fonts.googleapis.com/css?family=Droid+Serif:regular,bold' rel='stylesheet' type='text/css' /> 
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Manual Controller Augmentation - Alternative 1 &mdash; Bancha 1.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Bancha 1.1.0 documentation" href="../index.html" />
+    <link rel="up" title="How to Expose Models" href="How-to-Expose-Models.html" />
+    <link rel="next" title="Manual Controller Augmentation - Alternative 2" href="Controller-Augmentation-Alternative-2.html" />
+    <link rel="prev" title="How to Expose Models" href="How-to-Expose-Models.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="Controller-Augmentation-Alternative-2.html" title="Manual Controller Augmentation - Alternative 2"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="How-to-Expose-Models.html" title="How to Expose Models"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Bancha 1.1.0 documentation</a> &raquo;</li>
+          <li><a href="Usage-in-CakePHP.html" >Usage in CakePHP</a> &raquo;</li>
+          <li><a href="How-to-Expose-Models.html" accesskey="U">How to Expose Models</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="manual-controller-augmentation-alternative-1">
+<h1>Manual Controller Augmentation - Alternative 1<a class="headerlink" href="#manual-controller-augmentation-alternative-1" title="Permalink to this headline">¶</a></h1>
+<p>This is alternative 1, here&#8217;s <a class="reference external" href="./Controller-Augmentation-Alternative-2.html">alternative 2</a></p>
+<p>This is the default scaffolded Controller for the model &#8220;User&#8221; (without php docs). For Bancha modified parts are highlighted by an <tt class="docutils literal"><span class="pre">/*--&gt;</span> <span class="pre">*/</span></tt> in front of the line.</p>
+<div class="highlight-python"><pre>&lt;?php
+class UsersController extends AppController {
+
+    public function index() {
+        $this-&gt;User-&gt;recursive = 0;
+/*--&gt; */    $users = $this-&gt;paginate();   // added
+/*--&gt; */    $this-&gt;set('users', $users);  // modified, original $this-&gt;set('users', $this-&gt;paginate());
+/*--&gt; */    return array_merge($this-&gt;request['paging']['User'],array('records'=&gt;$users));  // added
+    }
+
+    public function view($id = null) {
+        $this-&gt;User-&gt;id = $id;
+        if (!$this-&gt;User-&gt;exists()) {
+            throw new NotFoundException(__('Invalid user'));
+        }
+        $this-&gt;set('user', $this-&gt;User-&gt;read(null, $id));
+/*--&gt; */    return $this-&gt;User-&gt;data;  // added
+    }
+
+    public function add() {
+        if ($this-&gt;request-&gt;is('post')) {
+            $this-&gt;User-&gt;create();
+
+/*--&gt; */        if(isset($this-&gt;request-&gt;params['isBancha']) &amp;&amp; $this-&gt;request-&gt;params['isBancha']) return $this-&gt;User-&gt;saveFieldsAndReturn($this-&gt;request-&gt;data);  // added
+
+            if ($this-&gt;User-&gt;save($this-&gt;request-&gt;data)) {
+                $this-&gt;Session-&gt;setFlash(__('The user has been saved'));
+                $this-&gt;redirect(array('action' =&gt; 'index'));
+            } else {
+                $this-&gt;Session-&gt;setFlash(__('The user could not be saved. Please, try again.'));
+            }
+        }
+    }
+
+    public function edit($id = null) {
+        $this-&gt;User-&gt;id = $id;
+        if (!$this-&gt;User-&gt;exists()) {
+            throw new NotFoundException(__('Invalid user'));
+        }
+
+/*--&gt; */    if(isset($this-&gt;request-&gt;params['isBancha']) &amp;&amp; $this-&gt;request-&gt;params['isBancha']) return $this-&gt;User-&gt;saveFieldsAndReturn($this-&gt;request-&gt;data);  // added
+
+        if ($this-&gt;request-&gt;is('post') || $this-&gt;request-&gt;is('put')) {
+            if ($this-&gt;User-&gt;save($this-&gt;request-&gt;data['0']['data'])) {
+                $this-&gt;Session-&gt;setFlash(__('The user has been saved'));
+                $this-&gt;redirect(array('action' =&gt; 'index'));
+            } else {
+                $this-&gt;Session-&gt;setFlash(__('The user could not be saved. Please, try again.'));
+            }
+        } else {
+            $this-&gt;request-&gt;data = $this-&gt;User-&gt;read(null, $id);
+        }
+    }
+
+    public function delete($id = null) {
+        if (!$this-&gt;request-&gt;is('post')) {
+            throw new MethodNotAllowedException();
+        }
+        $this-&gt;User-&gt;id = $id;
+        if (!$this-&gt;User-&gt;exists()) {
+            throw new NotFoundException(__('Invalid user'));
+        }
+
+/*--&gt; */    if(isset($this-&gt;request-&gt;params['isBancha']) &amp;&amp; $this-&gt;request-&gt;params['isBancha']) return $this-&gt;User-&gt;deleteAndReturn();  // added
+
+        if ($this-&gt;User-&gt;delete()) {
+            $this-&gt;Session-&gt;setFlash(__('User deleted'));
+            $this-&gt;redirect(array('action'=&gt;'index'));
+        }
+        $this-&gt;Session-&gt;setFlash(__('User was not deleted'));
+        $this-&gt;redirect(array('action' =&gt; 'index'));
+    }
+}</pre>
+</div>
+<p>You can see the changes are relatively small and have two aims:</p>
+<ul class="simple">
+<li>always return a result value</li>
+<li>don&#8217;t execute $this-&gt;setFlash() and $this-&gt;redirect(), since they are
+currently causing problems, also see <a class="reference external" href="https://github.com/Bancha/Bancha/wiki/How-to-Expose-Models">How to Expose
+Models</a></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/bancha-logo.png" alt="Logo"/>
+            </a></p>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="How-to-Expose-Models.html"
+                        title="previous chapter">How to Expose Models</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Controller-Augmentation-Alternative-2.html"
+                        title="next chapter">Manual Controller Augmentation - Alternative 2</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/resources/Controller-Augmentation-Alternative-1.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="Controller-Augmentation-Alternative-2.html" title="Manual Controller Augmentation - Alternative 2"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="How-to-Expose-Models.html" title="How to Expose Models"
+             >previous</a> |</li>
+        <li><a href="../index.html">Bancha 1.1.0 documentation</a> &raquo;</li>
+          <li><a href="Usage-in-CakePHP.html" >Usage in CakePHP</a> &raquo;</li>
+          <li><a href="How-to-Expose-Models.html" >How to Expose Models</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, StudioQ OG. All rights reserved.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

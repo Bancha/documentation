@@ -1,0 +1,536 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+<link href='http://fonts.googleapis.com/css?family=Droid+Serif:regular,bold' rel='stylesheet' type='text/css' /> 
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Dispatching in Bancha &mdash; Bancha 1.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Bancha 1.1.0 documentation" href="../index.html" />
+    <link rel="up" title="Technical Documentation" href="Technical-Documentation.html" />
+    <link rel="next" title="Consistent Model (Not yet implemented!)" href="Consistent-Model.html" />
+    <link rel="prev" title="Bancha Architecture" href="Bancha-Architecture.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="Consistent-Model.html" title="Consistent Model (Not yet implemented!)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Bancha-Architecture.html" title="Bancha Architecture"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Bancha 1.1.0 documentation</a> &raquo;</li>
+          <li><a href="Technical-Documentation.html" accesskey="U">Technical Documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="dispatching-in-bancha">
+<h1>Dispatching in Bancha<a class="headerlink" href="#dispatching-in-bancha" title="Permalink to this headline">¶</a></h1>
+<p>The biggest challenge in designing the architecture of Bancha was the
+dispatching process. Before we explain the architecture, we need to take
+a look at the request and response handling in CakePHP and ExtJS.</p>
+<div class="section" id="requests-in-extjs">
+<h2>Requests in ExtJS<a class="headerlink" href="#requests-in-extjs" title="Permalink to this headline">¶</a></h2>
+<p>One of the features of Ext Direct is that it can group multiple small
+Ajax requests into a single batch request. For example the clients needs
+to send two requests A and B within a very short time period to the
+server. Ext groups Request A and B into a single request and sends them
+to the server. The client expects that the server responds with one HTTP
+response, which includes Response A and Response B. The same thing
+happens if Ext does not receive a response to Request A. It will resend
+Request A together with Request B.</p>
+<div class="section" id="controllers-and-actions-in-extjs">
+<h3>Controllers and actions in ExtJS<a class="headerlink" href="#controllers-and-actions-in-extjs" title="Permalink to this headline">¶</a></h3>
+<p>ExtJS has different naming conventions for controllers and actions than
+CakePHP (and most other server side frameworks). Controllers are named
+action and actions are named method.</p>
+<p>Also ExtJS does not use the default names for CRUD, but the following:</p>
+<table>
+ <tr><td><p>Create</p>
+</td><td><p>create</p>
+</td></tr>
+ <tr><td><p>Retrieve</p>
+</td><td><p>read</p>
+</td></tr>
+ <tr><td><p>Update</p>
+</td><td><p>update</p>
+</td></tr>
+ <tr><td><p>Delete</p>
+</td><td><p>destroy</p>
+</td></tr>
+</table><p>Now we want to take a closer look at the format of CRUD request and
+responses. The basic structure of an Ext Direct is request is shown
+below. Some of these parameters are required, while some are not. The
+parameters action and method are required and define which action is
+executed on the server. A transaction ID must be passed through the
+parameter tid. Notable is also the parameter ____bcid__ which is
+optional and can hold the client ID. If this parameter is given Bancha
+ensures consistency for this model.</p>
+<pre>
+[{
+    "action":"Person",
+    "method":"update",
+    "result":{data:{…}}
+    "tid":6,
+    "type":"rpc"
+}]
+</pre><p>Example of an request:</p>
+<pre>
+[{
+    "action":"Person",
+    "method":"update",
+    "data":[{
+        "data":{
+            "__bcid":"4e2f23e5c6df3",
+            "id":"52",
+            "firstName":"Callie",
+            "lastName":"Winters",
+            "street":"[here are bad words]",
+            "city":"Mayagnez"
+        }
+    }],
+    "tid":6,
+    "type":"rpc"
+}]
+</pre><p>And a possible response:</p>
+<pre>
+[{
+    "action":"Person",
+    "method":"update",
+    "result":[{
+        "success":true,
+        "data":{
+            "__bcid":"4e2f23e5c6df3",
+            "id":"52",
+            "firstName":"Callie",
+            "lastName":"Winters",
+            "street":"", // server can modify client data like here
+            "city":"Mayagnez"
+        }
+    }],
+    "tid":6,
+    "type":"rpc"
+}]
+</pre><p>While the basic structure is the same for every CRUD action, the
+following four sub chapters describe the structure of the data element
+in the request and the response specific for every CRUD action. ###
+5.3.1.2 Create Create request sent by ExtJS:</p>
+<pre>
+{
+    "action":"User",
+    "method":"create",
+    "data":[{
+        "data":{
+            "id":0,
+            "name":"asdf",
+            "login":"asdf",
+            "created":null,
+            "email":"adsf@asdf.com",
+            "avatar":"",
+            "weight":80,
+            "heigth":120
+        }
+    }],
+    "type":"rpc",
+    "tid":6
+}
+</pre><p>The response should contain all data values including the ID generated
+by the server. It is also possible to change the value of a field and
+ExtJS will adopt the js model data and interface automatically.</p>
+</div>
+<div class="section" id="retrieve-read">
+<h3>Retrieve/Read<a class="headerlink" href="#retrieve-read" title="Permalink to this headline">¶</a></h3>
+<p>There is only one type of read action for retrieving a list of entities
+and for retrieving a single entity. When a single entity should be
+returned, there must be a parameter called id.</p>
+<p>Read request for a single entity in ExtJS:</p>
+<pre>
+[{
+    "action":"Person",
+    "method":"read",
+    "result":{
+        "data":{
+            "id":5
+        }
+    }
+    "tid":6,
+    "type":"rpc"
+}]
+</pre><p>Please note that the ID parameter must be also called id in order to
+allow Bancha to pass the request to CakePHP.</p>
+<p>Read request for a list of entities in ExtJS.</p>
+<pre>
+[{
+    "action":"User",
+    "method":"read",
+    "result":{
+        "data":{
+            "page":1,
+            "start":0,
+            "limit":25
+        }
+    }],
+    "type":"rpc",
+    "tid":2
+}]
+</pre><p>The <em>page</em> parameter represents the page number (default: 1).
+The <em>start</em> parameter is the index (offset) of the first record in the
+result and is used for paging (default: 0).
+The <em>limit</em> parameter is the number of records to read. The <em>sort</em>
+parameter is an array, where every element is an object with two
+elements. property highlights the name of a field and direction the
+order direction. It can be ASC or DESC. All parameter are optional.</p>
+<p>In both cases, a single entity or a list of entity is returned, the
+response looks like this: Response to a read request expected by ExtJS.</p>
+<pre>
+[{
+    "type":"rpc",
+    "tid":2,
+    "action":"User",
+    "method":"read",
+    "result":[{
+        "success":true,
+        "total": 100, // if paging is used this is the total count of records
+        "data": [{
+            // record 1
+            "id":"2",
+            "name":"fdas",
+            "login":"fdas",
+            "created":"2011-09-05 12:50:44",
+            "email":"fdas@fdas.com",
+            "avatar":"",
+            "weight":"80",
+            "heigth":null
+        }, {
+            // record 2
+            ...
+        }]
+    }]
+}]
+</pre></div>
+<div class="section" id="update">
+<h3>Update<a class="headerlink" href="#update" title="Permalink to this headline">¶</a></h3>
+<p>Update request sent by ExtJS.</p>
+<pre>
+{
+    "action":"User",
+    "method":"update",
+    "data":[{
+        "data":{
+            "id":2,
+            "name":"newName"
+        }
+    }],
+    "type":"rpc",
+    "tid":4
+}
+</pre><p>The request contains the ID and all changed values. Values that do not
+change are not required to be sent. The response should contain all
+values including the ID.</p>
+</pre></div>
+<div class="section" id="delete">
+<h3>Delete<a class="headerlink" href="#delete" title="Permalink to this headline">¶</a></h3>
+<p>Delete request sent by ExtJS.</p>
+<pre>
+{
+    "action":"User",
+    "method":"destroy",
+    "data":[{
+        "data":{
+            "id":2
+        }
+    }],
+    "type":"rpc",
+    "tid":5
+}
+</pre><p>For a delete request ExtJS only sends the ID of the entity to delete. It
+expects a response with only the <em>success</em> property inside the results
+element.</p>
+</div>
+</div>
+<div class="section" id="responses-in-extjs">
+<h2>Responses in ExtJS<a class="headerlink" href="#responses-in-extjs" title="Permalink to this headline">¶</a></h2>
+<p>Bancha does not only need to take care of ExtJS requests and transform
+them into CakePHP compatible requests it does also need to transform the
+responses. ExtJS excepts the following key-value pairs in each response.</p>
+<ul class="simple">
+<li>type - rpc</li>
+<li>tid - The transaction id that has just been processed</li>
+<li>action - The class/action that has just been processed</li>
+<li>method - The method that has just been processed</li>
+<li>result - The result of the method call</li>
+</ul>
+</div>
+<div class="section" id="request-handling-in-cakephp">
+<h2>Request Handling in CakePHP<a class="headerlink" href="#request-handling-in-cakephp" title="Permalink to this headline">¶</a></h2>
+<p>The CakePHP framework was designed to handle normal HTTP requests. Thus
+there is exactly one dispatcher, which takes exactly one HTTP request.
+Each request triggers one action on exactly one controller.</p>
+<div class="figure align-center">
+<img alt="Figure 1" src="../_images/image00.png" />
+<p class="caption">Figure 1</p>
+</div>
+<p>Figure 1: Part of the CakePHP class structure, highlighting the dispatch
+process.</p>
+<p>Unfortunately request handling in CakePHP does not only include passing
+parameters (GET and POST) to the <em>CakeRequest</em> object, but also includes
+transforming and defining some special request objects. What follows is
+an in-depth description of request handling in CakePHP.</p>
+<p>CakePHP uses <em>CakeRequest</em> to handle and represent all kinds of HTTP
+requests inside the framework. Therefore this class reads the values of
+<em>:math:`_GET</em>, <em>`*POST*, *:math:`_COOKIE</em>, <em>`*SESSION</em> and
+*:math:<cite>_SERVER*, which are automatically setted by PHP. Cake calls GET parameters params and POST parameters data and stores them in two different arrays _</cite>params_
+and <em>$data</em>. Params can be accessed using the magic array methods (see
+below), while data values can be accessed using the <em>data()</em> method of
+<em>CakeRequest</em>.</p>
+<p>GET parameters (params) in CakePHP:</p>
+<pre>
+$request = new CakeRequest();
+$request['key'] = 'value';
+echo $request['key'];
+</pre><p>POST parameters (data) in CakePHP:</p>
+<pre>
+$request = new CakeRequest();
+$request->data('key', 'value');
+echo $request->data('key');
+</pre><p>In addition the params array can contain values and arrays with a
+special meaning. This is because of the <em>Convention over Configuration</em>
+philosophy of CakePHP. For example the params <em>controller</em> and <em>action</em>
+are used to define which method in which class is executed, that means
+these params contain program logic for the given request. Another
+special element of params is <em>pass</em>. Pass contains variables which
+should be passed directly to the action method instead of being stored
+in the request object. For example we could take a look at the default
+method definition of the view action.</p>
+<p>Parameters defined in the pass array are directly passed to the action
+method.</p>
+<pre>
+public function view($id = null) {
+    // Controller logic
+}
+</pre><p>Another special parameter Bancha needs to take care of is named.
+Normally this array is generated by the CakePHP Router based on the
+given URL. But because Bancha only used one URL and passes all other
+parameters to the server in the POST request body, Bancha needs to
+create the named parameter manually. While the named array has also
+other purposes in a normal CakePHP application, it is used mainly to
+define paging properties in the Bancha context.</p>
+<p>In the next two sub chapters we want to further define how
+controllers/actions and paging parameters are handled in CakePHP.</p>
+<div class="section" id="controllers-and-actions-in-cakephp">
+<h3>Controllers and actions in CakePHP<a class="headerlink" href="#controllers-and-actions-in-cakephp" title="Permalink to this headline">¶</a></h3>
+<p>The name of a controller in CakePHP is the name of in corresponding
+model in plural form, the class also is suffixed with the word
+Controller. For example:</p>
+<ul class="simple">
+<li>Model: Article</li>
+<li>Controller name: Articles</li>
+<li>Controller class name: ArticlesController</li>
+</ul>
+<p>The Dispatcher class of CakePHP loads and creates the object
+automatically based on the value with the key controller in the params
+array.</p>
+<p>The action is based on the value of <em>action</em> in the params array and
+Cake automatically executes the method with this name from the
+controller object.</p>
+<p>When using CRUD, CakePHP uses the following names:</p>
+<table>
+ <tr><td><p>Create</p>
+</td><td><p>add</p>
+</td></tr>
+ <tr><td><p>Retrieve</p>
+</td><td><p>index/view</p>
+</td></tr>
+ <tr><td><p>Update</p>
+</td><td><p>edit</p>
+</td></tr>
+ <tr><td><p>Delete</p>
+</td><td><p>delete</p>
+</td></tr>
+</table><p>There are two methods to retrieve data. <em>index()</em> loads a list of
+entities, while <em>view()</em> loads an entity with a specific ID. <em>view()</em>,
+<em>edit()</em> and <em>delete()</em> require a pass parameter $id.</p>
+</div>
+<div class="section" id="paging-in-cakephp">
+<h3>Paging in CakePHP<a class="headerlink" href="#paging-in-cakephp" title="Permalink to this headline">¶</a></h3>
+<p>CakePHP automatically supports paging when passing the right parameters
+to an action. Thus Bancha needs to define these paging parameters in
+order to invoke the paging process in Cake. The paging parameters are
+stored, as mentioned before, as an param named paging. We now describe
+the paging parameters:</p>
+<ul class="simple">
+<li><em>page</em>: The current page, starts with 1. The default value is 1.</li>
+<li><em>limit</em>: Maximum number of entities per page, default for Bancha is
+500.</li>
+<li><em>order</em>: Associative array where the key is the name of a field of a
+model (for example <em>Article.title</em>) and the value is the direction
+(asc or desc).</li>
+<li><em>conditions</em>: Conditions that a row must fulfill in order to be
+included in the result set. See
+<a class="reference external" href="http://book.cakephp.org/view/1030/Complex-Find-Conditions">http://book.cakephp.org/view/1030/Complex-Find-Conditions</a> for more
+information on find conditions in CakePHP.</li>
+</ul>
+<ol class="arabic simple" start="16">
+<li><em>fields</em>: Array with column names (including the model name) that
+should be included in the result set.</li>
+<li><em>recursive</em>: If true related models will also be fetched from the
+database.</li>
+</ol>
+</div>
+</div>
+<div class="section" id="bancha-architecture">
+<h2>Bancha Architecture<a class="headerlink" href="#bancha-architecture" title="Permalink to this headline">¶</a></h2>
+<p>The problem we faced is that ExtJS occasionally sends multiple (logical)
+requests inside a single HTTP request, but CakePHP is not able to
+process multiple requests. Therefore we needed to somehow extend the
+dispatching process to handle multiple requests.</p>
+<p>In order to process batch requests we needed to replace the default
+CakePHP Dispatcher with an implementation that understands batch
+requests. We do this by adding a custom front controller, which uses
+<em>BanchaDispatcher</em> instead of the default <em>Dispatcher</em> class. In
+addition we also replace <em>CakeRequest</em> and <em>CakeResponse</em>.</p>
+<p>The purpose of these classes is to give the developer an abstract view
+of the HTTP request and response. Our <em>BanchaRequestCollection</em> class
+contains a method getRequests() which parses the request and creates an
+instance of <em>CakeRequest</em> for every logical request inside the batch
+request. <em>BanchaResponseCollection</em> works the other way around. It takes
+multiple <em>CakeResponse</em> objects and combines them into a single batch
+response and sends them to the browser.</p>
+<p>But there is another challenge with responses. Because it should be
+possible to use Bancha without changing a lot of the programs logic in
+the controller it is required to automatically transform the data
+structure returned from the action into the format defined by Ext
+Direct. This task is done by <em>BanchaResponseTransformer</em>. There is also
+a class called <em>BanchaRequestTransformer</em> which does all the request
+transformations.</p>
+<p>The main challenge with the Bancha architecture was that it should work
+without modifying the source code of CakePHP. An additional requirement
+was that it should be possible to add Bancha to existing projects
+without much effort. Therefore we designed the <em>BanchaDispatcher</em> as a
+wrapper for the normal CakePHP dispatching process. Thus the Dispatcher
+class of CakePHP is invoked with a <em>CakeRequest</em> object by
+<em>BanchaDispatcher</em>. When the normal CakePHP dispatching process is
+completed, <em>BanchaDispatcher</em> receives a <em>CakeResponse</em> object for every
+dispatched request and packs them using <em>BanchaResponseCollection</em>. This
+way we try to minimize incompatibility with future versions of CakePHP.</p>
+<p>Figure 2 highlights that the Bancha architecture only wrappers the
+normal CakePHP architecture and therefore offers a great amount of
+compatibility with existing CakePHP applications.</p>
+<div class="figure align-center">
+<img alt="Figure 2" src="../_images/image05.png" />
+<p class="caption">Figure 2</p>
+</div>
+<p>Figure 2: Part of the Bancha architecture showing the dispatching
+process.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/bancha-logo.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Dispatching in Bancha</a><ul>
+<li><a class="reference internal" href="#requests-in-extjs">Requests in ExtJS</a><ul>
+<li><a class="reference internal" href="#controllers-and-actions-in-extjs">Controllers and actions in ExtJS</a></li>
+<li><a class="reference internal" href="#retrieve-read">Retrieve/Read</a></li>
+<li><a class="reference internal" href="#update">Update</a></li>
+<li><a class="reference internal" href="#delete">Delete</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#responses-in-extjs">Responses in ExtJS</a></li>
+<li><a class="reference internal" href="#request-handling-in-cakephp">Request Handling in CakePHP</a><ul>
+<li><a class="reference internal" href="#controllers-and-actions-in-cakephp">Controllers and actions in CakePHP</a></li>
+<li><a class="reference internal" href="#paging-in-cakephp">Paging in CakePHP</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#bancha-architecture">Bancha Architecture</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Bancha-Architecture.html"
+                        title="previous chapter">Bancha Architecture</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Consistent-Model.html"
+                        title="next chapter">Consistent Model (Not yet implemented!)</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/resources/Dispatching-in-Bancha.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="Consistent-Model.html" title="Consistent Model (Not yet implemented!)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Bancha-Architecture.html" title="Bancha Architecture"
+             >previous</a> |</li>
+        <li><a href="../index.html">Bancha 1.1.0 documentation</a> &raquo;</li>
+          <li><a href="Technical-Documentation.html" >Technical Documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, StudioQ OG. All rights reserved.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

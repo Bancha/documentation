@@ -1,0 +1,330 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+<link href='http://fonts.googleapis.com/css?family=Droid+Serif:regular,bold' rel='stylesheet' type='text/css' /> 
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Bancha Architecture &mdash; Bancha 1.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Bancha 1.1.0 documentation" href="../index.html" />
+    <link rel="up" title="Technical Documentation" href="Technical-Documentation.html" />
+    <link rel="next" title="Dispatching in Bancha" href="Dispatching-in-Bancha.html" />
+    <link rel="prev" title="Introduction" href="Introduction.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="Dispatching-in-Bancha.html" title="Dispatching in Bancha"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Introduction.html" title="Introduction"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Bancha 1.1.0 documentation</a> &raquo;</li>
+          <li><a href="Technical-Documentation.html" accesskey="U">Technical Documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="bancha-architecture">
+<h1>Bancha Architecture<a class="headerlink" href="#bancha-architecture" title="Permalink to this headline">¶</a></h1>
+<div class="figure align-center">
+<img alt="BanchaArchitecture" src="../_images/image07.png" />
+<p class="caption">BanchaArchitecture</p>
+</div>
+<p>On the server-side Bancha transforms and marshalls data from the CakePHP
+framework and sends it to the front-end (browser). On the frontend the
+Bancha singleton unmarshalls the data and use it as model
+configurations.</p>
+<div class="section" id="bancha-front-controller">
+<h2>Bancha Front Controller<a class="headerlink" href="#bancha-front-controller" title="Permalink to this headline">¶</a></h2>
+<p>Every CakePHP application is initialized by the front controller, which
+is stored in the index.php file in the webroot directory. The front
+controller initializes the dispatcher. Because Bancha needs to
+initialize its own dispatcher (see section Bancha Architecture) and
+needs to load its own bootstrap file, Bancha is initialized by its own
+front controller. Because of CakePHP limitations the user needs to copy
+the front controller file bancha.php from the plugin into his webroot
+directory.</p>
+</div>
+<div class="section" id="exception-handling">
+<h2>Exception Handling<a class="headerlink" href="#exception-handling" title="Permalink to this headline">¶</a></h2>
+<p>When exceptions occurs, Bancha catches them and sends them back to the
+user as a ResponseCollection. If the debug level of CakePHP is greater
+than zero Bancha will send no information about the exception, in
+development it will send the message and the full trace. We made this
+decision, because CakePHP usually renders the thrown exception and we
+wanted a possibility to control thrown exceptions. Basically there are
+three possibilities to implement an exception handler. By creating an
+own exception handler, using AppController::appError(), or by using a
+custom renderer with Exception.renderer. For Bancha, the first one was
+used, because this gives full access for error handling. The exception
+is loaded in the config file bootstrap.php, which overwrites the
+standard Exception handler of CakePHP. To sum up, the error is being
+catched in the dispatching process, and the response is added as an
+exception.</p>
+</div>
+<div class="section" id="banchacontroller">
+<h2>BanchaController<a class="headerlink" href="#banchacontroller" title="Permalink to this headline">¶</a></h2>
+<p>BanchaController is a CakePHP controller and supplies required methods
+for ExtJS. These are a method for initializing ExtJSs Ext.Direct by
+sending the API definition and a method for acquiring the model
+metadata. The complexity derives from the different ways and
+interpration the data and parameters have in CakePHP and ExtJS. The
+controller relies on the BanchaBehavior for extracting the data.</p>
+<div class="section" id="how-to-use-it">
+<h3>How to use it<a class="headerlink" href="#how-to-use-it" title="Permalink to this headline">¶</a></h3>
+<p>There are 3 ways to use this controller. Just accessing the Controller
+with a URL like <a class="reference external" href="http://localhost/Bancha.js">http://localhost/Bancha.js</a> returns the Bancha API
+including controller actions but no ModelMetaData. You can also pass
+models as parameters to the index method like this
+<a class="reference external" href="http://localhost/Bancha.js?models=[Article,User">http://localhost/Bancha.js?models=[Article,User</a>] , this will give us the
+meta data for User and the Tag model.</p>
+<p>Bancha internally uses this mechanism, so you will normally NOT have to
+use any BanchaController methods.</p>
+</div>
+<div class="section" id="structure">
+<h3>Structure<a class="headerlink" href="#structure" title="Permalink to this headline">¶</a></h3>
+<p>So here&#8217;s an example request when the BanchaController::loadMetaData
+method is executed from Ext Direct.</p>
+<div class="highlight-python"><pre>{
+    "action":"Bancha",
+    "method":"loadMetaData",
+    "data":'[["User"]],
+    "type":"rpc",
+    "tid":1
+}</pre>
+</div>
+<p>Followed by the Response:</p>
+<pre>
+[{
+    "type":"rpc",
+    "tid":1,
+    "action":"Bancha",
+    "method":"loadMetaData",
+    "result":{
+        "User":{
+            "idProperty":"id",
+            "fields":[{
+                "name":"id",
+                "type":"int"
+            },{
+                "name":"name",
+                "type":"string"
+            },{
+                "name":"login",
+                "type":"string"
+            },{
+                "name":"created",
+                "type":"date"
+            },{
+                "name":"email",
+                "type":"string"
+            },{
+                "name":"avatar",
+                "type":"string"
+            },{
+                "name":"weight",
+                "type":"float"
+            },{
+                "name":"heigth",
+                "type":"int"
+            }],
+            "validations":[{
+                "type":"numberformat",
+                "name":"id",
+                "precision":0
+            },{
+                "type":"presence",
+                "name":"name"
+            },{
+                "type":"length",
+                "name":"name",
+                "min":3
+            },{
+                "type":"length",
+                "name":"name",
+                "max":64
+            },{
+                "type":"length",
+                "name":"login",
+                "min":3
+            },{
+                "type":"length",
+                "name":"login",
+                "max":64
+            },{
+                "type":"format",
+                "name":"login",
+                "matcher":"banchaAlphanum"
+            },{
+                "type":"format",
+                "name":"email",
+                "matcher":"banchaEmail"
+            },{
+                "type":"numberformat",
+                "name":"weight",
+                "precision":2
+            },{
+                "type":"numberformat",
+                "name":"height",
+                "precision":0
+            },{
+                "type":"numberformat",
+                "name":"height",
+                "min":50,
+                "max":300
+            },{
+                "type":"file",
+                "name":"avatar"
+                "extension": [
+                    "jpg",
+                    "jpeg",
+                    "gif",
+                    "png"
+                ]
+            }],
+            "associations":[{
+                "type":"hasMany",
+                "model":"Article",
+                "name":"articles"
+            }],
+            "sorters":[]
+        }
+    }
+}]
+</pre><p>Listing 2.3.2 shows the JSON encoded object that will be returned by
+BanchaController::index.</p>
+</div>
+</div>
+<div class="section" id="banchabehavior">
+<h2>BanchaBehavior<a class="headerlink" href="#banchabehavior" title="Permalink to this headline">¶</a></h2>
+<p>In CakePHP a behavior class consists of code that is shared between
+models. BanchaBehavior provides the function extractBanchaMetaData()
+which returns the meta data in the way ExtJS needs it. This is done
+using four private functions for better handling of the CakePHP model
+structure.</p>
+<p>The meta data can be grouped into four categories:</p>
+<ul class="simple">
+<li>associations</li>
+<li>column types</li>
+<li>validations</li>
+<li>sorters</li>
+</ul>
+</div>
+<div class="section" id="form-handling">
+<h2>Form Handling<a class="headerlink" href="#form-handling" title="Permalink to this headline">¶</a></h2>
+<p>After discussing many solutions, we figured out the best way is to just
+give the cake developer the oppertunity to choose how to handle files.
+So for the cake developer ExtJS file uploads will look just like normal
+file uploads in cake. On server side, we extract every parameter of the
+requests, and if a ”extUpload” parameter is detected, the response is
+going to be sent back as a HTML textarea with the JSON encoded string
+(Ext.Direct Spec):</p>
+<div class="highlight-python"><pre>&lt;code&gt;&lt;html&gt;&lt;body&gt;&lt;textarea&gt;{BANCHA EXT DIRECT JSON RESPONSE HERE}&lt;/textarea&gt;&lt;/body&gt;&lt;/html&gt; &lt;/code&gt;</pre>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/bancha-logo.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Bancha Architecture</a><ul>
+<li><a class="reference internal" href="#bancha-front-controller">Bancha Front Controller</a></li>
+<li><a class="reference internal" href="#exception-handling">Exception Handling</a></li>
+<li><a class="reference internal" href="#banchacontroller">BanchaController</a><ul>
+<li><a class="reference internal" href="#how-to-use-it">How to use it</a></li>
+<li><a class="reference internal" href="#structure">Structure</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#banchabehavior">BanchaBehavior</a></li>
+<li><a class="reference internal" href="#form-handling">Form Handling</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Introduction.html"
+                        title="previous chapter">Introduction</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Dispatching-in-Bancha.html"
+                        title="next chapter">Dispatching in Bancha</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/resources/Bancha-Architecture.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="Dispatching-in-Bancha.html" title="Dispatching in Bancha"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Introduction.html" title="Introduction"
+             >previous</a> |</li>
+        <li><a href="../index.html">Bancha 1.1.0 documentation</a> &raquo;</li>
+          <li><a href="Technical-Documentation.html" >Technical Documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, StudioQ OG. All rights reserved.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

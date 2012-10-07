@@ -1,0 +1,240 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+<link href='http://fonts.googleapis.com/css?family=Droid+Serif:regular,bold' rel='stylesheet' type='text/css' /> 
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Installation &mdash; Bancha 1.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Bancha 1.1.0 documentation" href="../index.html" />
+    <link rel="next" title="Usage in CakePHP" href="Usage-in-CakePHP.html" />
+    <link rel="prev" title="Welcome to Bancha’s documentation!" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="Usage-in-CakePHP.html" title="Usage in CakePHP"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../index.html" title="Welcome to Bancha’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">Bancha 1.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="http://banchaproject.com">|Bancha Project|</a></p>
+<div class="section" id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p class="first">You have downloaded and installed the lasted release of <a class="reference external" href="http://cakephp.org/">CakePHP
+2</a>.</p>
+</li>
+<li><p class="first">You have downloaded the lastest release of <a class="reference external" href="http://www.sencha.com/products/extjs/download/">ExtJS
+4</a> and/or <a class="reference external" href="http://www.sencha.com/products/touch/download/">Sencha
+Touch 2</a></p>
+<div class="highlight-python"><pre>Note that you might have to buy a commercial ExtJS license, see http://www.sencha.com/products/extjs/license/</pre>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="id1">
+<h2>Installation<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p class="first">Download the Bancha source and place it into the plugins folder of
+the existing CakePHP installation. (You should then have a either
+<em>plugins/Bancha</em> or <em>app/Plugin/Bancha</em>).</p>
+</li>
+<li><p class="first">Add at the end of your bootstrap (<em>app/Config/bootstrap.php</em>):</p>
+<div class="highlight-python"><pre>CakePlugin::load(array('Bancha' =&gt; array('routes' =&gt; true, 'bootstrap' =&gt; true)));</pre>
+</div>
+</li>
+<li><p class="first">Copy the file <em>app/Plugin/Bancha/*app/webroot/bancha-dispatcher.php_
+to *app/webroot/bancha-dispatcher.php</em> (Advanced users may want to
+symlink)</p>
+</li>
+<li><p class="first">For production you may want to add a caching provider, since Bancha
+uses reflection. For default configuration add at the end of
+<em>app/Config/core.php</em> (please make sure you are using the CakePHP
+2.1.0 core.php, otherwise $prefix is not defined):</p>
+<div class="highlight-python"><pre>/**
+ * Configure the cache for Banchas Remote API.
+ */
+Cache::config('_bancha_api_', array(
+    'engine' =&gt; $engine,
+    'prefix' =&gt; $prefix . 'bancha_api_',
+    'path' =&gt; CACHE . 'models' . DS,
+    'serialize' =&gt; ($engine === 'File'),
+    'duration' =&gt; $duration
+));</pre>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="setting-up-extjs">
+<h2>Setting up ExtJS<a class="headerlink" href="#setting-up-extjs" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p class="first">Place <em>ext-all.js</em> and <em>ext-all-dev.js</em> into <em>app/webroot/js/</em> and
+the ExtJS ressources folder into <em>app/webroot/css/</em></p>
+</li>
+<li><p class="first">To use Bancha on a site, include ExtJS and the files <em>/bancha-api.js</em>
+and <em>/bancha/js/Bancha.js</em>. For production usage you may want to add
+a parameter to already load all metadata on startup:
+<em>/bancha-api/models/all.js</em> or
+<em>/bancha-api/models/[Article,User].js</em>. Code for a plain html file:</p>
+<div class="highlight-python"><pre>&lt;!-- include ExtJS css --&gt;
+&lt;link rel="stylesheet" href="/css/resources/css/ext-all.css" type="text/css" /&gt;
+
+&lt;!-- include ExtJS --&gt;
+&lt;script type="text/javascript" src="/js/ext-all-dev.js"&gt;&lt;/script&gt;
+
+&lt;!-- include Bancha and the remote API --&gt;
+&lt;script type="text/javascript" src="/Bancha/js/Bancha-dev.js"&gt;&lt;/script&gt; &lt;!-- for the github version use /Bancha/js/Bancha.js --&gt;
+&lt;script type="text/javascript" src="/bancha-api/models/all.js"&gt;&lt;/script&gt;</pre>
+</div>
+</li>
+</ol>
+<p>Or put this code into your layout:</p>
+<div class="highlight-python"><pre>&lt;?php
+    echo $this-&gt;Html-&gt;css('resources/css/ext-all');
+    echo $this-&gt;Html-&gt;script('ext-all-dev');
+    echo $this-&gt;Html-&gt;script('/Bancha/js/Bancha-dev'); &lt;!-- for the github version use /Bancha/js/Bancha --&gt;
+    echo $this-&gt;Html-&gt;script('/bancha-api/models/all');
+?&gt;</pre>
+</div>
+</div>
+<div class="section" id="setting-up-sencha-touch">
+<h2>Setting up Sencha Touch<a class="headerlink" href="#setting-up-sencha-touch" title="Permalink to this headline">¶</a></h2>
+<p>See also <a class="reference external" href="http://vimeo.com/bancha/bancha-for-sencha-touch-2">Bancha for Sencha Touch 2
+Screencast</a></p>
+<ol class="arabic">
+<li><p class="first">Place <em>sencha-touch-all.js</em> and <em>sencha-touch-debug.js</em> into
+<em>app/webroot/js/</em> and the Sencha Touch ressources folder into
+<em>app/webroot/css/</em></p>
+</li>
+<li><p class="first">To use Bancha in a layout include Sencha Touch, and the files
+<em>/bancha-api.js</em> and <em>/bancha/js/Bancha.js</em> into your layout. For
+production usage you may want to add a parameter to already load all
+metadata on startup: <em>/bancha-api/models/all.js</em> or
+<em>/bancha-api/models/[Article,User].js</em>. Example:</p>
+<div class="highlight-python"><pre>&lt;!-- include Sencha Touch css --&gt;
+&lt;link rel="stylesheet" href="/css/resources/css/sencha-touch.css" /&gt;
+
+&lt;!-- include Sencha Touch --&gt;
+&lt;script type="text/javascript" src="/js/sencha-touch-all-debug.js"&gt;&lt;/script&gt;
+
+&lt;!-- include Bancha and the remote API --&gt;
+&lt;script type="text/javascript" src="/Bancha/js/Bancha-dev.js"&gt;&lt;/script&gt; &lt;!-- for the github version use /Bancha/js/Bancha.js --&gt;
+&lt;script type="text/javascript" src="/bancha-api/models/all.js"&gt;&lt;/script&gt;</pre>
+</div>
+</li>
+</ol>
+</div>
+<div class="section" id="trouble-shooting">
+<h2>Trouble shooting<a class="headerlink" href="#trouble-shooting" title="Permalink to this headline">¶</a></h2>
+<p>After you have successfully finished installation you can open the page
+<strong>/Bancha/setup-check.html</strong> to find any installation problem.</p>
+<p>For questions write us a mail: <a class="reference external" href="mailto:support&#37;&#52;&#48;banchaproject&#46;org">support<span>&#64;</span>banchaproject<span>&#46;</span>org</a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/bancha-logo.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Installation</a><ul>
+<li><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li><a class="reference internal" href="#id1">Installation</a></li>
+<li><a class="reference internal" href="#setting-up-extjs">Setting up ExtJS</a></li>
+<li><a class="reference internal" href="#setting-up-sencha-touch">Setting up Sencha Touch</a></li>
+<li><a class="reference internal" href="#trouble-shooting">Trouble shooting</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../index.html"
+                        title="previous chapter">Welcome to Bancha&#8217;s documentation!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Usage-in-CakePHP.html"
+                        title="next chapter">Usage in CakePHP</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/resources/Installation.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="Usage-in-CakePHP.html" title="Usage in CakePHP"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../index.html" title="Welcome to Bancha’s documentation!"
+             >previous</a> |</li>
+        <li><a href="../index.html">Bancha 1.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, StudioQ OG. All rights reserved.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
