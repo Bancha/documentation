@@ -12,30 +12,37 @@ Prerequisites
 
    ::
 
-       Note that you might have to buy a commercial ExtJS license, see http://www.sencha.com/products/extjs/license/
+       Note that you might have to buy a commercial ExtJS license, 
+       see http://www.sencha.com/products/extjs/license/
 
 Installation
 ------------
 
-1. Download the Bancha source and place it into the plugins folder of
-   the existing CakePHP installation. (You should then have a either
-   *plugins/Bancha* or *app/Plugin/Bancha*).
+1. Download the `Bancha source <banchaproject.org/download.html>`_ and 
+   place it into the *plugins* folder of your existing CakePHP installation. 
+   (You should then either have a *plugins/Bancha* or *app/Plugin/Bancha* folder).
 
-2. Add at the end of your bootstrap (*app/Config/bootstrap.php*):
+2. Write at the end of your bootstrap (*app/Config/bootstrap.php*):
 
-   ::
+   .. code-block:: php
 
        CakePlugin::load(array('Bancha' => array('routes' => true, 'bootstrap' => true))); 
 
-3. Copy the file *app/Plugin/Bancha/*app/webroot/bancha-dispatcher.php\_
+3. Copy the file *app/Plugin/Bancha/_app/webroot/bancha-dispatcher.php*
    to *app/webroot/bancha-dispatcher.php* (Advanced users may want to
    symlink)
-4. For production you may want to add a caching provider, since Bancha
-   uses reflection. For default configuration add at the end of
-   *app/Config/core.php* (please make sure you are using the CakePHP
-   2.1.0 core.php, otherwise $prefix is not defined):
+4. Add the BanchaComponent to your AppController:
 
-   ::
+   .. code-block:: php
+
+       public $components = array('Bancha.Bancha');
+
+5. For production you may want to add a caching provider, since Bancha
+   uses reflection. For default configuration add this at the end of
+   *app/Config/core.php* (please make sure you are using the CakePHP
+   2.1.0+ core.php, otherwise $prefix is not defined):
+
+   .. code-block:: php
 
        /**
         * Configure the cache for Banchas Remote API.
@@ -52,14 +59,16 @@ Setting up ExtJS
 ----------------
 
 1. Place *ext-all.js* and *ext-all-dev.js* into *app/webroot/js/* and
-   the ExtJS ressources folder into *app/webroot/css/*
+   the ExtJS resources folder into *app/webroot/css/*
 2. To use Bancha on a site, include ExtJS and the files */bancha-api.js*
    and */bancha/js/Bancha.js*. For production usage you may want to add
    a parameter to already load all metadata on startup:
    */bancha-api/models/all.js* or
-   */bancha-api/models/[Article,User].js*. Code for a plain html file:
+   */bancha-api/models/[Article,User].js*. 
 
-   ::
+   Code for a plain html file:
+
+   .. code-block:: html
 
        <!-- include ExtJS css -->
        <link rel="stylesheet" href="/css/resources/css/ext-all.css" type="text/css" />
@@ -71,16 +80,18 @@ Setting up ExtJS
        <script type="text/javascript" src="/Bancha/js/Bancha-dev.js"></script> <!-- for the github version use /Bancha/js/Bancha.js -->
        <script type="text/javascript" src="/bancha-api/models/all.js"></script>
 
-Or put this code into your layout:
 
-::
 
-    <?php
-        echo $this->Html->css('resources/css/ext-all');
-        echo $this->Html->script('ext-all-dev');
-        echo $this->Html->script('/Bancha/js/Bancha-dev'); <!-- for the github version use /Bancha/js/Bancha -->
-        echo $this->Html->script('/bancha-api/models/all');
-    ?>
+   Code for cake layouts:
+
+   .. code-block:: php
+
+       <?php
+           echo $this->Html->css('resources/css/ext-all');
+           echo $this->Html->script('ext-all-dev');
+           echo $this->Html->script('/Bancha/js/Bancha-dev'); <!-- for the github version use /Bancha/js/Bancha -->
+           echo $this->Html->script('/bancha-api/models/all');
+       ?>
 
 Setting up Sencha Touch
 -----------------------
@@ -89,7 +100,7 @@ See also `Bancha for Sencha Touch 2
 Screencast <http://vimeo.com/bancha/bancha-for-sencha-touch-2>`_
 
 1. Place *sencha-touch-all.js* and *sencha-touch-debug.js* into
-   *app/webroot/js/* and the Sencha Touch ressources folder into
+   *app/webroot/js/* and the Sencha Touch resources folder into
    *app/webroot/css/*
 2. To use Bancha in a layout include Sencha Touch, and the files
    */bancha-api.js* and */bancha/js/Bancha.js* into your layout. For
@@ -97,7 +108,7 @@ Screencast <http://vimeo.com/bancha/bancha-for-sencha-touch-2>`_
    metadata on startup: */bancha-api/models/all.js* or
    */bancha-api/models/[Article,User].js*. Example:
 
-   ::
+   .. code-block:: html
 
        <!-- include Sencha Touch css -->
        <link rel="stylesheet" href="/css/resources/css/sencha-touch.css" />
@@ -113,7 +124,7 @@ Trouble shooting
 ----------------
 
 After you have successfully finished installation you can open the page
-**/Bancha/setup-check.html** to find any installation problem.
+*/Bancha/setup-check.html* to find any installation problem.
 
 For questions write us a mail: support@banchaproject.org
 

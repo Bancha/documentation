@@ -89,6 +89,7 @@ div.related {
  
 div.related a {
     color: #744;
+    text-decoration: underline;
 }
  
 div.sphinxsidebar {
@@ -141,6 +142,7 @@ div.sphinxsidebar ul {
  
 div.sphinxsidebar a {
     color: #444;
+    text-decoration: none;
 }
  
 div.sphinxsidebar input {
@@ -157,7 +159,7 @@ div.sphinxsidebar input[type=text]{
  
 a {
     color: #005B81;
-    text-decoration: none;
+    text-decoration: underline;
 }
  
 a:hover {
@@ -338,4 +340,9 @@ code {
 
 .listing-caption strong {
     margin-right: 5px;
+}
+
+/* make the link lists without any text-decoration */
+.toctree-wrapper a {
+    text-decoration: none;
 }
