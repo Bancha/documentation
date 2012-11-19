@@ -26,16 +26,20 @@ Installation
 
    .. code-block:: php
 
-       CakePlugin::load(array('Bancha' => array('routes' => true, 'bootstrap' => true))); 
+       CakePlugin::load(array('Bancha' => array('routes' => true, 'bootstrap' => true)));  
 
 3. Copy the file *app/Plugin/Bancha/_app/webroot/bancha-dispatcher.php*
    to *app/webroot/bancha-dispatcher.php* (Advanced users may want to
    symlink)
-4. Add the BanchaComponent to your AppController:
+4. Add the BanchaPaginatorComponent to your AppController:
 
    .. code-block:: php
 
-       public $components = array('Bancha.Bancha');
+      /**
+       * Use the BanchaPaginatorComponent to also support pagination
+       * and remote searching for Sencha Touch and ExtJS stores
+       */
+      public $components = array('Session', 'Paginator' => array('className' => 'Bancha.BanchaPaginator'));  
 
 5. For production you may want to add a caching provider, since Bancha
    uses reflection. For default configuration add this at the end of
