@@ -1,17 +1,54 @@
-Supported Controller Method Results
-===================================
+Controller Method Return Values
+===============================
 
-Here you find all supported ontroller-Method Result Types
+Bancha expects each remotable method to return the result for the remotable request. It supports two options of return values:  
 
-TRUE / FALSE
+If the result is a array with a success property, it will be traited as a final response and will not be transformed in any way.
+
+Otherwise it will be transformed, depending on the input. You can find more information below.
+
+
+Final ExtJS/Sencha Touch response
+---------------------------------
+In this case you must provide a array with a success property, and Bancha will deliver the data as given. 
+
+A possible controller return value for this would be:
+
+::
+
+    array( 
+        'success' => true // this is the only necessary property
+        'data' => array( 'whatever' => true ), 
+        'message' => 'This is a message for the client.'
+    )
+
+
+In all other cases Bancha will transform the data.
+
+Boolean Value
 ------------
 
-This indicates that the operation was or was not successful, on the
-client side this will either trigger the failure or the success
+This indicates to Bancha that the operation was or was not successful, 
+on the client side this will either trigger the failure or the success
 listener.
+
+Bancha will transform this to the ExtJS/Sencha Touch response:
+
+::
+
+    array( 
+        'success' => (boolean) $result
+    )
+
 
 Cake One Record
 ---------------
+
+If you return a cake single record Bancha will transform it into the 
+ExtJS/Sencha Touch structure. This is like it is used in the add or 
+edit method. 
+
+A possible input looks like this:
 
 ::
 
@@ -19,19 +56,19 @@ Cake One Record
         'User' => array( 
             'id' => 5, 
             'name' => 'Joe', 
-        ), 
-        'success' => true // optional, true is default 
+        ),
     )
-
-This returns one record, like it is used in the add or edit method. The
-optional success property tells the client is the success or failure
-trigger should be called.
 
 You don't have to clean this array from possible associated data, Bancha
 does this for you.
 
 Cake Multi-Result
------------------
+--------------
+
+If you return a list of cake records Bancha will transform it into the 
+ExtJS/Sencha Touch structure. 
+
+A possible input looks like this:
 
 ::
 
@@ -50,8 +87,6 @@ Cake Multi-Result
         ), 
     )
 
-This returns multiple records, like it is used in the index method.
-
 You don't have to clean this array from possible associated data, Bancha
 does this for you.
 
@@ -63,24 +98,26 @@ controller method:
 
 ::
 
-    return array_merge($this->request['paging']['_MODELNAME_'],array('records'=>$users)); 
+    return array_merge($this->request['paging']['_MODELNAME_'],array('records'=>$queried_models)); 
 
-We need this structure to map cakes paging properties to extjs.
+We need this structure to map cakes paging properties to ExtJS/Sencha Touch. Bancha will 
+scaffolld any CRUD index method like above to return a list of records to 
+ExtJS/Sencha Touch stores.
 
-ExtJS formated Data
--------------------
+Arbitrary Data
+------------
 
-If the data is not in any of the above, it will just be passed through.
-So it is also possible to pass something like this:
+All results which does not match any of the above will be handles as arbitrary data and 
+transformed to:
 
 ::
 
     array( 
         'success'=>true, 
-        'data' => array( 
-            'whatever' => true 
-        ) 
+        'data' => $result
     ) 
+
+
 
 That's it, enjoy.
 
