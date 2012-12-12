@@ -3,14 +3,14 @@ Controller Method Return Values
 
 Bancha expects each remotable method to return the result for the remotable request. It supports two options of return values:  
 
-If the result is a array with a success property, it will be traited as a final response and will not be transformed in any way.
+If the result is an array with a success property, it will be traited as a final response and will not be transformed in any way.
 
 Otherwise it will be transformed, depending on the input. You can find more information below.
 
 
 Final ExtJS/Sencha Touch response
 ---------------------------------
-In this case you must provide a array with a success property, and Bancha will deliver the data as given. 
+In this case you must provide an array with a success property, and Bancha will deliver the data as given. 
 
 A possible controller return value for this would be:
 
@@ -101,13 +101,13 @@ controller method:
     return array_merge($this->request['paging']['_MODELNAME_'],array('records'=>$queried_models)); 
 
 We need this structure to map cakes paging properties to ExtJS/Sencha Touch. Bancha will 
-scaffolld any CRUD index method like above to return a list of records to 
+scaffold any CRUD index method like above to return a list of records to 
 ExtJS/Sencha Touch stores.
 
 Arbitrary Data
 ------------
 
-All results which does not match any of the above will be handles as arbitrary data and 
+All results which do not match any of the above will be handled as arbitrary data and 
 transformed to:
 
 ::
