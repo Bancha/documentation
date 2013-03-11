@@ -43,7 +43,7 @@ with a custom renderer, like:
                             return store.getAt(store.findExact('id',c.data.author_id)).data.name;
                         };
                     } //eo afterBuild
-                } /eo scaffold
+                } //eo scaffold
             }; //eo panel
     }}); //eo load
 
