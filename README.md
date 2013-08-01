@@ -1,3 +1,7 @@
+DEPRECATED -[Go to the new Documentation](http://banchaproject.org/documentation.html)
+=====================
+
+
 Bancha Documentation
 =====================
 
